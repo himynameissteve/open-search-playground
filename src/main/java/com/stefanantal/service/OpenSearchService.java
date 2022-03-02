@@ -135,17 +135,48 @@ public class OpenSearchService {
    * Adds a document to an index.
    *
    * @param indexName to be added to.
-   * @param id of the document to be given.
+   * @param id of the document to be given. Must not contain only whitespace characters or be empty.
    * @param document to be added to the index.
    * @param <T> type of the document.
    * @return true if operation was successful.
    */
   public <T> boolean addDocumentToIndex(String indexName, String id, T document) {
-    // TODO: Overload this method with id as an optional parameter.
+    return addToIndex(indexName, id, document);
+  }
+
+  /**
+   * Adds a document to an index.
+   *
+   * @param indexName to be added to.
+   * @param document to be added to the index.
+   * @param <T> type of the document.
+   * @return true if operation was successful.
+   */
+  public <T> boolean addDocumentToIndex(String indexName, T document) {
+    return addToIndex(indexName, null, document);
+  }
+
+  /**
+   * Adds a document to an index.
+   *
+   * @param indexName to be added to.
+   * @param id of the document to be given. If null, empty or only whitespaces, an id will be
+   *     generated in OpenSearch.
+   * @param document to be added to the index.
+   * @param <T> type of the document.
+   * @return true if operation was successful.
+   */
+  private <T> boolean addToIndex(String indexName, String id, T document) {
     openConnection();
 
-    IndexRequest<T> indexRequest =
-        new IndexRequest.Builder<T>().index(indexName).id(id).value(document).build();
+    IndexRequest<T> indexRequest;
+
+    if (id == null || id.isBlank()) {
+      indexRequest = new IndexRequest.Builder<T>().index(indexName).value(document).build();
+    } else {
+      indexRequest = new IndexRequest.Builder<T>().index(indexName).id(id).value(document).build();
+    }
+
     try {
       IndexResponse response = client.index(indexRequest);
     } catch (IOException e) {

@@ -1,9 +1,15 @@
 package com.stefanantal;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JSR310Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.stefanantal.dto.Ps5Game;
-import com.stefanantal.dto.Release;
 import com.stefanantal.service.OpenSearchService;
-import java.time.LocalDate;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,35 +40,16 @@ public class DemoApplication {
     String index = "ps5-games";
     openSearchService.createIndex(index);
 
-    // Populate index with sample data
-    Ps5Game first = new Ps5Game();
-    first.setTitle("007 Racing");
-    first.setDeveloper("Eutechnyx");
-    first.setPublisher("EA Games");
+    ObjectMapper objectMapper = new ObjectMapper();
 
-    Release firstReleaseEurope = new Release();
-    firstReleaseEurope.setRegion("Europe");
-    firstReleaseEurope.setDate(LocalDate.of(2000, 12, 15));
-
-    Release firstReleaseNorthAmerica = new Release();
-    firstReleaseNorthAmerica.setRegion("North America");
-    firstReleaseNorthAmerica.setDate(LocalDate.of(2000, 11, 20));
-
-    Ps5Game second = new Ps5Game();
-    second.setTitle("007: The World Is Not Enough");
-    second.setDeveloper("Black Ops Entertainment");
-    second.setPublisher("EA Games");
-
-    Release secondReleaseEurope = new Release();
-    secondReleaseEurope.setRegion("Europe");
-    secondReleaseEurope.setDate(LocalDate.of(2000, 11, 17));
-
-    Release secondReleaseNorthAmerica = new Release();
-    secondReleaseNorthAmerica.setRegion("North America");
-    secondReleaseNorthAmerica.setDate(LocalDate.of(2000, 11, 8));
-
-    openSearchService.addDocumentToIndex(index, "1", first);
-    openSearchService.addDocumentToIndex(index, "2", second);
+    try {
+      List<Ps5Game> sampleData =
+          objectMapper.readValue(new File("data/data.json"), new TypeReference<List<Ps5Game>>() {});
+      // TODO: Replace this with a bulk operation as soon as the OpenSearch Library supports that.
+      sampleData.forEach(ps5Game -> openSearchService.addDocumentToIndex(index, ps5Game));
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
 
     log.info("Finished importing test data into OpenSearch.");
   }

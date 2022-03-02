@@ -1,0 +1,32 @@
+[
+  {
+    "title": "007 Racing",
+    "developer": "Eutechnyx",
+    "publisher": "EA Games",
+    "releases": [
+      {
+        "region": "Europe",
+        "date": "2000-12-15"
+      },
+      {
+        "region": "North America",
+        "date": "2000-11-20"
+      }
+    ]
+  },
+  {
+    "title": "007: The World Is Not Enough",
+    "developer": "Black Ops Entertainment",
+    "publisher": "EA Games",
+    "releases": [
+      {
+        "region": "Europe",
+        "date": "2000-11-17"
+      },
+      {
+        "region": "North America",
+        "date": "2000-11-08"
+      }
+    ]
+  }
+]
